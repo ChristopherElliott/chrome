@@ -1,4 +1,5 @@
 rss/
 typings/
+.vscode/
 *.js.map
 *.js
