@@ -3,7 +3,6 @@
   "license": "MIT",
   "description": "Extension to open all tabs in feedly. ",
   "devDependencies": {
-    "@types/node": "^7.0.29"
   },
   "name": "rssalltabs",
   "version": "1.0.0",
