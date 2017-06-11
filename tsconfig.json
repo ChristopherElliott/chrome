@@ -2,7 +2,7 @@
     "compilerOptions": {
         "noEmitOnError": false,
         "lib": [
-            "es5", "dom"
+            "es2016", "dom"
         ], 
         "watch": true
     },

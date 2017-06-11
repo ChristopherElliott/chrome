@@ -46,7 +46,7 @@ var token = "";
 
 // Navigates to the reader of the user's choice (for subscribing to the feed).
 function navigate() {
-  var select = document.getElementById('readerDropdown');
+  var select = <HTMLSelectElement>document.getElementById('readerDropdown');
   var url =
       feedReaderList[select.selectedIndex].url.replace(
           "%s", encodeURIComponent(feedUrl));
@@ -54,7 +54,7 @@ function navigate() {
   // Before we navigate, see if we want to skip this step in the future...
   if (storageEnabled) {
     // See if the user wants to always use this reader.
-    var alwaysUse = document.getElementById('alwaysUse');
+    var alwaysUse = <HTMLInputElement>document.getElementById('alwaysUse');
     if (alwaysUse.checked) {
       window.localStorage.defaultReader =
           feedReaderList[select.selectedIndex].url;
@@ -69,16 +69,16 @@ function navigate() {
 * The main function. Sets up the selection list for possible readers and
 * fetches the data.
 */
-function main() {
+function subscribeMain() {
   if (storageEnabled && window.localStorage.readerList)
       feedReaderList = JSON.parse(window.localStorage.readerList);
   if (!feedReaderList)
     feedReaderList = defaultReaderList();
 
   // Populate the list of readers.
-  var readerDropdown = document.getElementById('readerDropdown');
-  for (i = 0; i < feedReaderList.length; ++i) {
-    readerDropdown.options[i] = new Option(feedReaderList[i].description, i);
+  var readerDropdown = <HTMLSelectElement>document.getElementById('readerDropdown');
+  for (var i = 0; i < feedReaderList.length; ++i) {
+    readerDropdown.options[i] = new Option(feedReaderList[i].description, i.toString());
     if (storageEnabled && isDefaultReader(feedReaderList[i].url))
       readerDropdown.selectedIndex = i;
   }
@@ -163,6 +163,8 @@ function handleFeedParsingFailed(error) {
   itemsTag.appendChild(error_frame);
 }
 
+declare var frame: HTMLIFrameElement; 
+
 function createFrame(frame_id, html) {
   // During testing, we stuff the iframe with the script directly, so we relax
   // the policy on running scripts under that scenario.
@@ -228,13 +230,15 @@ function handleResponse() {
   itemsTag.appendChild(iframe);
 }
 
+declare var iframe: HTMLIFrameElement; 
+
 /**
 * Handler for when selection changes.
 */
 function onSelectChanged() {
   if (!storageEnabled)
     return;
-  var readerDropdown = document.getElementById('readerDropdown');
+  var readerDropdown = <HTMLSelectElement>document.getElementById('readerDropdown');
 
   // If the last item (Manage...) was selected we show the options.
   var oldSelection = readerDropdown.selectedIndex;
@@ -256,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var button = document.getElementById('rss_subscription_subscribe_button');
   button.addEventListener('click', navigate);
 
-  main();
+  subscribeMain();
 });
 
 window.addEventListener("message", function(e) {

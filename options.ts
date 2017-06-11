@@ -44,10 +44,10 @@ function main() {
     window.localStorage.defaultReader = feedReaderList[0].url;
 
   // Populate the list of readers.
-  var readerListbox = document.getElementById('readerListbox');
+  var readerListbox = <HTMLSelectElement>document.getElementById('readerListbox');
   while (readerListbox.options.length > 0)
     readerListbox.remove(0);
-  for (i = 0; i < feedReaderList.length; ++i) {
+  for (let i = 0; i < feedReaderList.length; ++i) {
     var description = feedReaderList[i].description;
     if (isDefaultReader(feedReaderList[i].url))
       description += " " + chrome.i18n.getMessage("rss_subscription_default");
@@ -55,12 +55,12 @@ function main() {
   }
 
   // Set up the 'show preview?' checkbox.
-  var skipPreview = document.getElementById('alwaysUseDefault');
+  var skipPreview = <HTMLInputElement>document.getElementById('alwaysUseDefault');
   skipPreview.checked = window.localStorage.showPreviewPage == "No";
 }
 
 function toggleFeedPreview() {
-  var alwaysUseDefault = document.getElementById('alwaysUseDefault');
+  var alwaysUseDefault = <HTMLInputElement>document.getElementById('alwaysUseDefault');
   if (alwaysUseDefault.checked)
     window.localStorage.showPreviewPage = "No";
   else
@@ -68,7 +68,7 @@ function toggleFeedPreview() {
 }
 
 function setDefault() {
-  var readerListbox = document.getElementById('readerListbox');
+  var readerListbox = <HTMLSelectElement>document.getElementById('readerListbox');
   var selection = readerListbox.options[readerListbox.selectedIndex];
   window.localStorage.defaultReader = selection.value;
 
@@ -88,6 +88,8 @@ function resetList() {
   // Reinititalize the page.
   main();
 }
+
+declare var readerListbox : HTMLSelectElement;
 
 function onSelectionChanged() {
   var selected = readerListbox.selectedIndex > -1;
