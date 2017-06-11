@@ -31,7 +31,7 @@ function isDefaultReader(url) {
 * Find an element with |id| and replace the text of it with i18n message with
 * |msg| key.
 */
-function i18nReplaceImpl(id, msg, attribute) {
+function i18nReplaceImpl(id, msg, attribute?) {
   var element = document.getElementById(id);
   if (element) {
     if (attribute)

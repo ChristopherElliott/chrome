@@ -16,7 +16,7 @@ function subscribe(tab: chrome.tabs.Tab, feed_url: string)  {
   // Removed:  && window.localStorage.showPreviewPage == "No"
   if (window.localStorage) {
     // Skip the preview.
-    url = window.localStorage.defaultReader.replace("%s", escape(feed_url));
+    url = window.localStorage.defaultReader.replace("%s", encodeURI(feed_url));
   } else {
     // Show the preview page.
     url = "subscribe.html?" + encodeURIComponent(feed_url);
@@ -106,7 +106,7 @@ function preview(feed_url) {
       // Removed:  && window.localStorage.showPreviewPage == "No"
       if (window.localStorage) {
         // Skip the preview.
-        url = window.localStorage.defaultReader.replace("%s", escape(feed_url));
+        url = window.localStorage.defaultReader.replace("%s", encodeURI(feed_url));
       } else {
         // Show the preview page.
         url = "subscribe.html?" + encodeURIComponent(feed_url);

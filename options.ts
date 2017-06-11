@@ -17,15 +17,15 @@ function main() {
   document.getElementById('dialogBackground').style.display = "none";
 
   // Make sure the buttons are disabled to begin with.
-  document.getElementById('editReader').disabled = true;
-  document.getElementById('removeReader').disabled = true;
-  document.getElementById('setDefault').disabled = true;
+  (<HTMLButtonElement>document.getElementById('editReader')).disabled = true;
+  (<HTMLButtonElement>document.getElementById('removeReader')).disabled = true;
+  (<HTMLButtonElement>document.getElementById('setDefault')).disabled = true;
 
   if (!storageEnabled) {
-    document.getElementById('addReader').disabled = true;
-    document.getElementById('readerListbox').disabled = true;
-    document.getElementById('alwaysUseDefault').disabled = true;
-    document.getElementById('resetList').disabled = true;
+    (<HTMLButtonElement>document.getElementById('addReader')).disabled = true;
+    (<HTMLButtonElement>document.getElementById('readerListbox')).disabled = true;
+    (<HTMLButtonElement>document.getElementById('alwaysUseDefault')).disabled = true;
+    (<HTMLButtonElement>document.getElementById('resetList')).disabled = true;
 
     alert(chrome.i18n.getMessage("rss_subscription_no_localstorage"));
     return;
@@ -94,30 +94,30 @@ declare var readerListbox : HTMLSelectElement;
 function onSelectionChanged() {
   var selected = readerListbox.selectedIndex > -1;
   // To edit a reader something must be selected.
-  document.getElementById('editReader').disabled = !selected;
+  (<HTMLButtonElement>document.getElementById('editReader')).disabled = !selected;
   // To set default, the current selection cannot already be default.
-  document.getElementById('setDefault').disabled = !selected ||
+  (<HTMLButtonElement>document.getElementById('setDefault')).disabled = !selected ||
       isDefaultReader(readerListbox[readerListbox.selectedIndex].value);
   // To remove the selected reader it must not be the last item.
-  document.getElementById('removeReader').disabled =
+  (<HTMLButtonElement>document.getElementById('removeReader')).disabled =
       !selected || readerListbox.options.length < 2;
 }
 
 function editReader(index) {
-  var readerListbox = document.getElementById('readerListbox');
+  var readerListbox = <HTMLSelectElement>document.getElementById('readerListbox');
 
   if (index == -1) {
     // Adding a new item, make sure the text boxes are empty.
-    document.getElementById('urlText').value = "";
-    document.getElementById('descriptionText').value = "";
+    (<HTMLInputElement>document.getElementById('urlText')).value = "";
+    (<HTMLInputElement>document.getElementById('descriptionText')).value = "";
     editingIndex = -1;  // New item.
     editingDefault = true;  // New items become default items.
   } else if (index == 0) {
     // Editing some item, find the current item index and store it.
     editingIndex = readerListbox.selectedIndex;
     var oldOption = readerListbox.options[editingIndex];
-    document.getElementById('urlText').value = oldOption.value;
-    document.getElementById('descriptionText').value =
+    (<HTMLInputElement>document.getElementById('urlText')).value = oldOption.value;
+    (<HTMLInputElement>document.getElementById('descriptionText')).value =
         oldOption.text.replace(
             ' ' + chrome.i18n.getMessage("rss_subscription_default"), '');
     editingDefault = isDefaultReader(oldOption.value);
@@ -150,7 +150,7 @@ function removeReader() {
  */
 function showDialog() {
   document.getElementById('urlAssist').innerText = assistText;
-  document.getElementById('save').disabled = true;
+  (<HTMLButtonElement>document.getElementById('save')).disabled = true;
 
   // Show the dialog box.
   document.getElementById('dialogBackground').style.display = "-webkit-box";
@@ -170,14 +170,14 @@ function hideDialog() {
 function validateInput() {
   document.getElementById('statusMsg').innerText = "";
 
-  var description = document.getElementById('descriptionText');
-  var url = document.getElementById('urlText');
+  var description = <HTMLInputElement>document.getElementById('descriptionText');
+  var url = <HTMLInputElement>document.getElementById('urlText');
 
   var valid = (description.value.length > 0 &&
                url.value.length > 0 &&
                url.value.indexOf("%s") > -1);
 
-  document.getElementById('save').disabled = !valid;
+  (<HTMLButtonElement>document.getElementById('save')).disabled = !valid;
 }
 
 /**
@@ -187,8 +187,8 @@ function save() {
   // Get the old list.
   var feedReaderList = JSON.parse(window.localStorage.readerList);
 
-  var url = document.getElementById('urlText').value;
-  var description = document.getElementById('descriptionText').value;
+  var url = (<HTMLInputElement>document.getElementById('urlText')).value;
+  var description = (<HTMLInputElement>document.getElementById('descriptionText')).value;
 
   if (editingIndex == -1) {
     // Construct a new list.
@@ -197,7 +197,7 @@ function save() {
     // Add the new item.
     newFeedList.push({ 'url': url, 'description': description });
 
-    for (i = 0; i < feedReaderList.length; ++i)
+    for (let i = 0; i < feedReaderList.length; ++i)
       newFeedList.push(feedReaderList[i]);
 
     feedReaderList = newFeedList;

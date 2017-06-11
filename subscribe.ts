@@ -62,7 +62,7 @@ function navigate() {
     }
   }
 
-  document.location = url;
+  window.location.href = url;
 }
 
 /**
@@ -134,7 +134,7 @@ function subscribeMain() {
   req.overrideMimeType('text/xml');
   req.send(null);
 
-  document.getElementById('feedUrl').href = 'view-source:' + feedUrl;
+  (<HTMLAnchorElement>document.getElementById('feedUrl')).href = 'view-source:' + feedUrl;
 }
 
 // Sets the title for the feed.
@@ -243,7 +243,7 @@ function onSelectChanged() {
   // If the last item (Manage...) was selected we show the options.
   var oldSelection = readerDropdown.selectedIndex;
   if (readerDropdown.selectedIndex == readerDropdown.length - 1)
-    window.location = "options.html";
+    window.location.href = "options.html";
 }
 
 document.addEventListener('DOMContentLoaded', function () {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-chrome.extension.onMessage.addListener(function(request, sender) {
+chrome.runtime.onMessage.addListener(function(request, sender) {
   if (request.msg == "feedIcon") {
     // First validate that all the URLs have the right schema.
     var input = [];

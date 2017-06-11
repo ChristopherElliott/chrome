@@ -24,16 +24,17 @@ function findFeedLinks() {
       'contains(@type, "rdf")]', document, null, 0, null);
 
   var feeds = [];
-  var item: Node;
+  var item: HTMLAnchorElement;
   var count = 0;
-  while (item = result.iterateNext()) {
+  while (item = <HTMLAnchorElement>result.iterateNext()) {
     feeds.push({"href": item.href, "title": item.title});
     ++count;
   }
 
   if (count > 0) {
     // Notify the extension needs to show the RSS page action icon.
-    chrome.extension.sendMessage({msg: "feedIcon", feeds: feeds});
+    //chrome.extension.sendMessage({msg: "feedIcon", feeds: feeds});
+    chrome.runtime.sendMessage({msg: "feedIcon", feeds: feeds}); 
   }
 }
 
@@ -57,7 +58,7 @@ function isFeedDocument() {
   if (soleTagInBody == "RSS" || soleTagInBody == "FEED" ||
       soleTagInBody == "RDF") {
     debugMsg(logLevels.info, "Found feed: Tag is: " + soleTagInBody);
-    chrome.extension.sendMessage({msg: "feedDocument", href: location.href});
+    chrome.runtime.sendMessage({msg: "feedDocument", href: location.href});
     return true;
   }
 
@@ -73,13 +74,13 @@ function isFeedDocument() {
     if (currentLogLevel >= logLevels.error) {
       var error = doc.getElementsByTagName("parsererror");
       if (error.length)
-        debugMsg(logLevels.error, 'error: ' + doc.childNodes[0].outerHTML);
+        debugMsg(logLevels.error, 'error: ' + (<HTMLElement>doc.childNodes[0]).outerHTML);
     }
 
     // |doc| now contains the parsed document within the PRE tag.
     if (containsFeed(doc)) {
       // Let the extension know that we should show the subscribe page.
-      chrome.extension.sendMessage({msg: "feedDocument", href: location.href});
+      chrome.runtime.sendMessage({msg: "feedDocument", href: location.href});
       return true;
     }
   }

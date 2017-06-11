@@ -23,7 +23,7 @@ var startTag = '<!--Token:';
 var tokenStart = html.indexOf(startTag);
 if (tokenStart > -1) {
   tokenStart += startTag.length;
-  targetOrigin = html.substring(tokenStart, tokenStart+32);
+  targetOrigin = html.substring(tokenStart, tokenStart + 32);
   tokenStart += 32;
   var tokenEnd = html.indexOf('-->', tokenStart);
   if (tokenEnd > tokenStart)
@@ -33,10 +33,10 @@ if (tokenStart > -1) {
 if (token.length > 0) {
   var mc = new MessageChannel();
   window.parent.postMessage(
-      token,
-      'chrome-extension:/' + '/' + targetOrigin,
-      [mc.port2]);
-  mc.port1.onmessage = function(event) {
+    token,
+    'chrome-extension:/' + '/' + targetOrigin,
+    [mc.port2]);
+  mc.port1.onmessage = function (event) {
     var parser = new DOMParser();
     var doc = parser.parseFromString(event.data, "text/xml");
     if (doc) {
@@ -60,8 +60,8 @@ function buildPreview(doc) {
   if (entries.length == 0)
     entries = doc.getElementsByTagName('item');
 
-  for (i = 0; i < entries.length && i < maxFeedItems; ++i) {
-    item = entries.item(i);
+  for (let i = 0; i < entries.length && i < maxFeedItems; ++i) {
+    let item = entries.item(i);
 
     /* Grab the title for the feed item. */
     var itemTitle = item.getElementsByTagName('title')[0];
@@ -103,21 +103,28 @@ function buildPreview(doc) {
 
     /* If we found a link we'll create an anchor element,
     otherwise just use a bold headline for the title. */
-    var anchor = (link != "") ? document.createElement("a") :
-                                document.createElement("strong");
-    anchor.id = "anchor_" + String(i);
-    if (link != "")
+    var titleElement: HTMLElement; 
+    if (link != "") {
+      let anchor = document.createElement("a");
+      anchor.id = "anchor_" + String(i);
       anchor.href = link;
-    anchor.innerHTML = itemTitle;
-    anchor.target = "_top";
-    anchor.className = "item_title";
-
+      anchor.innerHTML = itemTitle;
+      anchor.target = "_top";
+      anchor.className = "item_title";
+      titleElement = anchor; 
+    } else {
+      let titleContainer = document.createElement("strong");
+      titleContainer.id = "anchor_" + String(i);
+      titleContainer.innerHTML = itemTitle;
+      titleContainer.className = "item_title";
+      titleElement = titleContainer; 
+    }
     var span = document.createElement("span");
     span.id = "desc_" + String(i);
     span.className = "item_desc";
     span.innerHTML = itemDesc;
 
-    td.appendChild(anchor);
+    td.appendChild(titleElement);
     td.appendChild(document.createElement("br"));
     td.appendChild(span);
     td.appendChild(document.createElement("br"));
