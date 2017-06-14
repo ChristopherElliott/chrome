@@ -10,18 +10,27 @@ function feedLink(url) {
 }
 
 
-function subscribe(tab: chrome.tabs.Tab, feed_url: string)  {
+function subscribe(tab: chrome.tabs.Tab, feed_url: string) {
+  // Leave pinned tabs alone 
+  if (tab.pinned)
+    return;
+
   // See if we need to skip the preview page and subscribe directly.
   var url = "";
   // Removed:  && window.localStorage.showPreviewPage == "No"
   if (window.localStorage) {
     // Skip the preview.
-    url = window.localStorage.defaultReader.replace("%s", encodeURI(feed_url));
+    var readerTemplate = window.localStorage.defaultReader;
+    if (tab.url.startsWith(readerTemplate.replace("%s", "")))
+      return window.close(); 
+
+    url = readerTemplate.replace("%s", encodeURI(feed_url));
   } else {
     // Show the preview page.
     url = "subscribe.html?" + encodeURIComponent(feed_url);
   }
   chrome.tabs.update(tab.id, { url: url });
+  return window.close(); 
 }
 
 
