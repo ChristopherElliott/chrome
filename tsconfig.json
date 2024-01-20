@@ -4,7 +4,8 @@
         "lib": [
             "es2016", "dom"
         ], 
-        "watch": true
+        "watch": true, 
+        "sourceMap": true
     },
     "include": [
         "**/*.ts"
@@ -13,4 +14,4 @@
         "node_modules",
         "**/*.spec.ts"
     ]
-}
+} 

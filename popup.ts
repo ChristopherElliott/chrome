@@ -15,22 +15,38 @@ function subscribe(tab: chrome.tabs.Tab, feed_url: string) {
   if (tab.pinned)
     return;
 
-  // See if we need to skip the preview page and subscribe directly.
-  var url = "";
-  // Removed:  && window.localStorage.showPreviewPage == "No"
-  if (window.localStorage) {
-    // Skip the preview.
-    var readerTemplate = window.localStorage.defaultReader;
-    if (tab.url.startsWith(readerTemplate.replace("%s", "")))
+    // Have we seen this feed before? 
+    chrome.storage.local.get("feedHistory", history => {
+      // See if we need to skip the preview page and subscribe directly.
+      let url = "";
+      // Removed:  && window.localStorage.showPreviewPage == "No"
+      let readerTemplate  = "https://feedly.com/i/subscription/feed/%s"; 
+
+      if (history[feed_url]) 
+      {
+        console.debug("We've seen this feed before.")
+        chrome.tabs.remove(tab.id); 
+        return window.close(); 
+      }
+      
+      console.debug("New feed")
+      history[feed_url] = true; 
+
+      if (tab.url.startsWith(readerTemplate.replace("%s", "")))
+        return window.close(); 
+
+      url = readerTemplate.replace("%s", encodeURI(feed_url));
+
+      // else {
+      //   // Show the preview page.
+      //   url = "subscribe.html?" + encodeURIComponent(feed_url);
+      // }
+      chrome.tabs.update(tab.id, { url: url });
       return window.close(); 
 
-    url = readerTemplate.replace("%s", encodeURI(feed_url));
-  } else {
-    // Show the preview page.
-    url = "subscribe.html?" + encodeURIComponent(feed_url);
-  }
-  chrome.tabs.update(tab.id, { url: url });
-  return window.close(); 
+      
+    })
+    
 }
 
 
@@ -49,45 +65,47 @@ function popupMain() {
     tabs.forEach((tab) => {
       chrome.storage.local.get(tab.id.toString(), function (result) {
         var feeds = result[tab.id];
-        if (feeds.length == 1) {
+        if (feeds && feeds.length == 1) {
           // Only one feed, no need for a bubble; go straight to the subscribe
           // page.
           subscribe(tab, feeds[0].href);
-        } else {
-          var content = document.getElementById('content');
-          var heading = document.getElementById('heading');
-          heading.innerText =
-            chrome.i18n.getMessage("rss_subscription_action_title");
-          content.appendChild(document.createElement('br'));
+        } 
+        // else {
+        //   var content = document.getElementById('content');
+        //   var heading = document.getElementById('heading');
+        //   heading.innerText =
+        //     chrome.i18n.getMessage("rss_subscription_action_title");
+        //   content.appendChild(document.createElement('br'));
 
-          var feed_list = document.createElement('table');
-          feed_list.style.width = "400";
-          for (var i = 0; i < feeds.length; ++i) {
-            // Create an RSS image and the anhor encapsulating it.
-            var img_link = feedLink(feeds[i].href);
-            var img = document.createElement('img');
-            img.src = "feed-icon-16x16.png";
-            img_link.appendChild(img);
+        //   var feed_list = document.createElement('table');
+        //   feed_list.style.width = "400";
+        //   for (var i = 0; i < feeds.length; ++i) {
+        //     // Create an RSS image and the anhor encapsulating it.
+        //     var img_link = feedLink(feeds[i].href);
+        //     var img = document.createElement('img');
+        //     img.src = "feed-icon-16x16.png";
+        //     img_link.appendChild(img);
 
-            // Create a text node and the anchor encapsulating it.
-            var text_link = feedLink(feeds[i].href);
-            text_link.appendChild(document.createTextNode(feeds[i].title));
+        //     // Create a text node and the anchor encapsulating it.
+        //     var text_link = feedLink(feeds[i].href);
+        //     text_link.appendChild(document.createTextNode(feeds[i].title));
 
-            // Add the data to a row in the table.
-            var tr = document.createElement('tr');
-            tr.className = "feedList";
-            var td = document.createElement('td');
-            td.width = "16";
-            td.appendChild(img_link);
-            var td2 = document.createElement('td');
-            td2.appendChild(text_link);
-            tr.appendChild(td);
-            tr.appendChild(td2);
-            feed_list.appendChild(tr);
-          }
+        //     // Add the data to a row in the table.
+        //     var tr = document.createElement('tr');
+        //     tr.className = "feedList";
+        //     var td = document.createElement('td');
+        //     td.width = "16";
+        //     td.appendChild(img_link);
+        //     var td2 = document.createElement('td');
+        //     td2.appendChild(text_link);
+        //     tr.appendChild(td);
+        //     tr.appendChild(td2);
+        //     feed_list.appendChild(tr);
+        //   }
 
-          content.appendChild(feed_list);
-        }
+        //   content.appendChild(feed_list);
+        // }
+
       });
     });
   });
@@ -109,7 +127,7 @@ function preview(feed_url) {
     // query. When the popup is opened, there is certainly a window and at least
     // one tab, so we can safely assume that |tabs| is a non-empty array.
 
-    tabs.forEach((tab) => {
+    tabs.forEach(tab => {
       // See if we need to skip the preview page and subscribe directly.
       var url = "";
       // Removed:  && window.localStorage.showPreviewPage == "No"
